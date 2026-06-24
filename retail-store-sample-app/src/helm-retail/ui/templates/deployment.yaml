@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: ui
+
+spec:
+  replicas: {{ .Values.replicaCount }}
+
+  selector:
+    matchLabels:
+      app: ui
+
+  template:
+    metadata:
+      labels:
+        app: ui
+
+    spec:
+      containers:
+      - name: ui
+
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        
+        env:
+        - name: RETAIL_UI_PRODUCT_IMAGES_PATH
+          value: "/tmp/images"
+        
+        ports:
+        - containerPort: {{ .Values.service.port }}
+
+        resources:
+          requests:
+            cpu: {{ .Values.resources.requests.cpu }}
+            memory: {{ .Values.resources.requests.memory }}
+
+          limits:
+            cpu: {{ .Values.resources.limits.cpu }}
+            memory: {{ .Values.resources.limits.memory }}

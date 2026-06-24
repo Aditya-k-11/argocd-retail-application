@@ -1,0 +1,73 @@
+# Cleaned local values for orders microservice
+replicaCount: 1
+
+image:
+  repository: adityakanojia11/retail-orders
+  pullPolicy: Always
+  tag: "v1"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+podSecurityContext: {}
+securityContext: {}
+
+# Matches internal service communication mappings
+service:
+  type: ClusterIP
+  port: 8080
+
+# Completely empty block to bypass "0/1 nodes are available: 1 Insufficient cpu"
+resources:
+  limits:
+    memory: 768Mi
+  requests:
+    memory: 384Mi
+
+startupProbe:
+  initialDelaySeconds: 15
+  periodSeconds: 10
+  failureThreshold: 30
+
+livenessProbe:
+  initialDelaySeconds: 0
+  periodSeconds: 10
+  timeoutSeconds: 5
+
+readinessProbe:
+  initialDelaySeconds: 0
+  periodSeconds: 10
+  timeoutSeconds: 5
+
+autoscaling:
+  enabled: false
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+# Local configuration overrides for standalone mock environments
+app:
+  persistence:
+    provider: 'in-memory'
+    endpoint: ''
+    database: 'orders'
+  messaging:
+    provider: 'in-memory'
+
+# Explicitly disabled external cluster dependencies
+postgresql:
+  create: false
+
+rabbitmq:
+  create: false
+
+metrics:
+  enabled: false
