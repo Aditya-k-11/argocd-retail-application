@@ -18,41 +18,31 @@ spec:
         - name: orders
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          env:
-            - name: RETAIL_ORDERS_PERSISTENCE_PROVIDER
-              value: "in-memory"
-            - name: RETAIL_ORDERS_MESSAGING_PROVIDER
-              value: "in-memory"
-            - name: SPRING_PROFILES_ACTIVE
-              value: "in-memory"
-            - name: SPRING_CLOUD_KUBERNETES_ENABLED
-              value: "false"
-            - name: SPRING_KUBERNETES_CONFIG_ENABLED
-              value: "false"
+          # Arguments tell the Go binary to listen on 8080 and reply with valid JSON
+          args:
+            - "-text={\"status\":\"UP\",\"service\":\"orders-mock\"}"
+            - "-listen=:8080"
           ports:
             - name: http
-              containerPort: {{ .Values.service.port }}
+              containerPort: 8080
               protocol: TCP
+          # Updated probes to hit "/" which matches how hashicorp/http-echo behaves
           startupProbe:
             httpGet:
-              path: /actuator/health
-              port: {{ .Values.service.port }}
-            initialDelaySeconds: {{ .Values.startupProbe.initialDelaySeconds }}
-            periodSeconds: {{ .Values.startupProbe.periodSeconds }}
-            failureThreshold: {{ .Values.startupProbe.failureThreshold }}
+              path: /
+              port: 8080
+            initialDelaySeconds: 2
+            periodSeconds: 5
+            failureThreshold: 3
           livenessProbe:
             httpGet:
-              path: /actuator/health
-              port: {{ .Values.service.port }}
-            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
-            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
-            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+              path: /
+              port: 8080
+            periodSeconds: 10
           readinessProbe:
             httpGet:
-              path: /actuator/health
-              port: {{ .Values.service.port }}
-            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
-            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
-            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+              path: /
+              port: 8080
+            periodSeconds: 10
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

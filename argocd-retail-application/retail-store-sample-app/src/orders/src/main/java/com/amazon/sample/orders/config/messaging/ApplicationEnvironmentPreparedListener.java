@@ -13,23 +13,24 @@ public class ApplicationEnvironmentPreparedListener
     var environment = event.getEnvironment();
 
     var messagingProvider = environment.getProperty(
-      "retail.orders.messaging.provider"
+      "retail.orders.messaging.provider",
+      environment.getProperty("RETAIL_ORDERS_MESSAGING_PROVIDER")
     );
 
-    if (messagingProvider.equals("rabbitmq")) {
+    if ("rabbitmq".equals(messagingProvider)) {
       Properties props = new Properties();
-      props.put(
-        "spring.rabbitmq.addresses",
-        environment.getProperty("retail.orders.messaging.rabbitmq.addresses")
-      );
-      props.put(
-        "spring.rabbitmq.username",
-        environment.getProperty("retail.orders.messaging.rabbitmq.username")
-      );
-      props.put(
-        "spring.rabbitmq.password",
-        environment.getProperty("retail.orders.messaging.rabbitmq.password")
-      );
+      String addresses = environment.getProperty("retail.orders.messaging.rabbitmq.addresses");
+      if (addresses != null) {
+        props.put("spring.rabbitmq.addresses", addresses);
+      }
+      String username = environment.getProperty("retail.orders.messaging.rabbitmq.username");
+      if (username != null) {
+        props.put("spring.rabbitmq.username", username);
+      }
+      String password = environment.getProperty("retail.orders.messaging.rabbitmq.password");
+      if (password != null) {
+        props.put("spring.rabbitmq.password", password);
+      }
       environment
         .getPropertySources()
         .addFirst(new PropertiesPropertySource("rabbitmqProps", props));
