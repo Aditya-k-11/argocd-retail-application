@@ -1,0 +1,9 @@
+apiVersion: v2
+name: cart
+description: Helm Chart for Retail Store Cart Service
+type: application
+
+version: 0.1.0
+
+appVersion: "v1"
+
