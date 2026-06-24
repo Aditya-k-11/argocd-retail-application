@@ -25,7 +25,11 @@ service:
   port: 8080
 
 # Completely empty block to bypass "0/1 nodes are available: 1 Insufficient cpu"
-resources: {}
+resources:
+  limits:
+    memory: 768Mi
+  requests:
+    memory: 384Mi
 
 startupProbe:
   initialDelaySeconds: 15
